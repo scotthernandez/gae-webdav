@@ -39,7 +39,7 @@ public class ResourceFactory implements com.bradmcevoy.http.ResourceFactory {
 		WebdavUser wu = (WebdavUser)WebdavServlet.request().getAuthorization().getTag();
 		
 		if (wu == null)
-			wu = getUserFromHost(host);
+			wu = ofy.get(getUserKeyFromHost(ofy, host));
 		
 		if (wu == null)
 			return null;
@@ -47,7 +47,9 @@ public class ResourceFactory implements com.bradmcevoy.http.ResourceFactory {
 		if ("".equals(betterUrl)) 
 			return root;
 		
-		Resource res = getLastItem(getKey(root), i, 1);
+		Key<WebdavFolder> rootKey = ofy.query(WebdavFolder.class).filter("user", getKey(wu)).getKey();
+
+		Resource res = getLastItem(rootKey, i, 0);
 		return res;
 	}
 
@@ -56,20 +58,39 @@ public class ResourceFactory implements com.bradmcevoy.http.ResourceFactory {
 		String name = path[pos];
 		
 		WebdavFile wfile = null;
+		//try for a folder first
 		WebdavFolder wfolder = ofy.query(WebdavFolder.class).ancestor(parent).filter("name", name).get();
-		if (wfolder == null)
-			wfile = ofy.query(WebdavFile.class).ancestor(parent).filter("name", name).get();;
+		if (wfolder == null) //try for a file next
+			wfile = ofy.query(WebdavFile.class).ancestor(parent).filter("name", name).get();
 		
-		if (pos < path.length)
+		if ((pos + 1) < path.length) //recurse
 			return getLastItem(getKey(wfolder), path, pos+1);
+		if (wfile == null && wfolder == null)
+			return null;
 		
 		return inject((wfolder == null) ? new FileResource(wfile) : new FolderResource(wfolder));
 	}
 
-	private WebdavUser getUserFromHost(String host) {
+	public static Key<WebdavUser> getUserKeyFromHost(Objectify ofy, String host) {
 		String username = host.split(".")[0];
-		return ofy.query(WebdavUser.class).filter("username", username).get();
+		return ofy.query(WebdavUser.class).filter("username", username).getKey();
 	}
+	
+	public static WebdavFolder getFolder(Objectify ofy, Key<WebdavUser> user, String url) {
+		WebdavFolder wf = null;
+		String[] parts = url.split("/");
+		Key<WebdavFolder> prevKey = ofy.query(WebdavFolder.class).filter("user", user).getKey();
+		for(String part : parts) {
+			Key<WebdavFolder> nextKey = ofy.query(WebdavFolder.class).ancestor(prevKey).filter("name", part).getKey();
+			if (nextKey == null)
+				return null;
+			prevKey = nextKey;
+		}
+		
+		wf = ofy.get(prevKey);
+		return wf;
+	}
+
 
 	protected <T> Key<T> getKey(T entity) {
 		return ofy.getFactory().getKey(entity);

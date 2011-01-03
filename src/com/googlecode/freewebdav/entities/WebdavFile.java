@@ -14,7 +14,7 @@ import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Indexed;
 import com.googlecode.objectify.annotation.Parent;
 
-@Entity(name="folders") @Cached @Indexed @Data @ToString
+@Entity(name="files") @Cached @Indexed @Data @ToString
 public class WebdavFile {
 	@Parent Key<WebdavFolder> parent;
 	@Id Long id;

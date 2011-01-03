@@ -14,7 +14,7 @@
 	</filter-mapping>
 
 	<listener>
-		<listener-class>com.googlecode.freewebdav.guice.GSCL</listener-class>
+		<listener-class>com.googlecode.freewebdav.guice.ServletContextListener</listener-class>
 	</listener>
 
 	<mime-mapping> 
