@@ -21,7 +21,12 @@ import com.googlecode.objectify.Objectify;
 
 @SuppressWarnings("unchecked")
 public class FolderResource extends NamedCollectionResource<WebdavFolder> implements PutableResource, MakeCollectionableResource, DeletableCollectionResource {
-	public FolderResource(WebdavFolder wf) {super(wf, null, wf.getName());}
+	public FolderResource(WebdavFolder wf) {
+		super(wf, null, wf.getName());
+		dateCreated = wf.getCreated();
+		dateModified = wf.getLastModified();
+
+	}
 
 	@Override
 	protected void ensureChildren() {
@@ -32,7 +37,7 @@ public class FolderResource extends NamedCollectionResource<WebdavFolder> implem
 
 		for(WebdavFile wf : ofy.query(WebdavFile.class).ancestor(parent))
 			_children.put(wf.getName(), inject(new FileResource(wf)));
-		
+
 	}
 
 	@Override

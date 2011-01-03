@@ -72,12 +72,14 @@ public class ResourceFactory implements com.bradmcevoy.http.ResourceFactory {
 	}
 
 	public static Key<WebdavUser> getUserKeyFromHost(Objectify ofy, String host) {
-		String username = host.split(".")[0];
+		String username = host.substring(0,host.indexOf('.'));
 		return ofy.query(WebdavUser.class).filter("username", username).getKey();
 	}
 	
 	public static WebdavFolder getFolder(Objectify ofy, Key<WebdavUser> user, String url) {
 		WebdavFolder wf = null;
+		if (url.charAt(0) == '/')
+			url = url.substring(1);
 		String[] parts = url.split("/");
 		Key<WebdavFolder> prevKey = ofy.query(WebdavFolder.class).filter("user", user).getKey();
 		for(String part : parts) {
@@ -103,6 +105,11 @@ public class ResourceFactory implements com.bradmcevoy.http.ResourceFactory {
 	
 	//Mac/Windows/Linux crap -- ignore!
 	public static boolean shouldIgnore(String url) {
+		
+		if(url.length() > 0)
+			return false;
+		
+		//since we can store anything let everything by...for now.
 		boolean ignore = url.endsWith("thumbs.db") || url.endsWith("Thumbs.db") || url.endsWith("desktop.ini") || 
 				url.endsWith("folder.gif") || url.endsWith("Thumbs") || url.endsWith("._refresh") ||  //url.endsWith("folder.jpg") || win7=unc-format connection;  
 				url.endsWith(".DS_Store") || url.endsWith("Contents") || url.endsWith("Contents/PkgInfo") || 

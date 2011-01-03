@@ -49,7 +49,7 @@ public class WebdavServlet extends HttpServlet {
     	AuthenticationService authSvc = new AuthenticationService(authHandlers);
 
     	DefaultWebDavResponseHandler respHandler = new DefaultWebDavResponseHandler(authSvc);
-    	httpManager = new ServletHttpManager(fact);
+    	httpManager = new ServletHttpManager(fact, authSvc);
     	httpManager.addFilter(0, new PreAuthenticationFilter(respHandler, sm, np));
     }
 

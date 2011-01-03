@@ -16,8 +16,10 @@ import com.googlecode.freewebdav.entities.WebdavFile;
 public class FileResource extends AuthenticatedResource implements GetableResource, DeletableResource {
 	WebdavFile file;
 	protected FileResource(WebdavFile wf) { 
+		super(wf.getName());
 		file = wf;
-		name = wf.getName();
+		dateCreated = wf.getCreated();
+		dateModified = wf.getLastModified();
 	}
 	@Override
 	public Long getContentLength() {

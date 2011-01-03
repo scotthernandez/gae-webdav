@@ -8,6 +8,7 @@ import lombok.Data;
 
 import com.bradmcevoy.http.Auth;
 import com.bradmcevoy.http.DigestResource;
+import com.bradmcevoy.http.PropFindableResource;
 import com.bradmcevoy.http.Request;
 import com.bradmcevoy.http.Request.Method;
 import com.bradmcevoy.http.Resource;
@@ -17,7 +18,7 @@ import com.googlecode.objectify.Key;
 import com.googlecode.objectify.Objectify;
 
 @Data
-public class AuthenticatedResource implements Resource, DigestResource {
+public class AuthenticatedResource implements Resource, DigestResource, PropFindableResource {
 //	private static final Logger log = Logger.getLogger(AuthenticatedResource.class.getName() );
 	
 	@Inject protected Injector injector;
@@ -25,6 +26,7 @@ public class AuthenticatedResource implements Resource, DigestResource {
 	protected String name;
 	protected String id;
 	protected Date dateModified = new Date();
+	protected Date dateCreated = new Date();
 	
 	protected AuthenticatedResource() {}
 	public AuthenticatedResource(String id, String name){
@@ -72,6 +74,11 @@ public class AuthenticatedResource implements Resource, DigestResource {
 	@Override
 	public Date getModifiedDate() {
 		return (dateModified == null) ? new Date() : dateModified;
+	}
+	
+	@Override
+	public Date getCreateDate() {
+		return (dateCreated == null) ? new Date() : dateCreated;
 	}
 
 	@Override
