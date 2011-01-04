@@ -47,7 +47,7 @@ public class ResourceFactory implements com.bradmcevoy.http.ResourceFactory {
 		if ("".equals(betterUrl)) 
 			return root;
 		
-		Key<WebdavFolder> rootKey = ofy.query(WebdavFolder.class).filter("user", getKey(wu)).getKey();
+		Key<WebdavFolder> rootKey = ofy.query(WebdavFolder.class).filter("parent", getKey(wu)).getKey();
 
 		Resource res = getLastItem(rootKey, i, 0);
 		return res;
@@ -59,9 +59,9 @@ public class ResourceFactory implements com.bradmcevoy.http.ResourceFactory {
 		
 		WebdavFile wfile = null;
 		//try for a folder first
-		WebdavFolder wfolder = ofy.query(WebdavFolder.class).ancestor(parent).filter("name", name).get();
+		WebdavFolder wfolder = ofy.query(WebdavFolder.class).filter("parent", parent).filter("name", name).get();
 		if (wfolder == null) //try for a file next
-			wfile = ofy.query(WebdavFile.class).ancestor(parent).filter("name", name).get();
+			wfile = ofy.query(WebdavFile.class).filter("parent", parent).filter("name", name).get();
 		
 		if ((pos + 1) < path.length) //recurse
 			return getLastItem(getKey(wfolder), path, pos+1);
@@ -83,7 +83,7 @@ public class ResourceFactory implements com.bradmcevoy.http.ResourceFactory {
 		String[] parts = url.split("/");
 		Key<WebdavFolder> prevKey = ofy.query(WebdavFolder.class).filter("user", user).getKey();
 		for(String part : parts) {
-			Key<WebdavFolder> nextKey = ofy.query(WebdavFolder.class).ancestor(prevKey).filter("name", part).getKey();
+			Key<WebdavFolder> nextKey = ofy.query(WebdavFolder.class).filter("parent", prevKey).filter("name", part).getKey();
 			if (nextKey == null)
 				return null;
 			prevKey = nextKey;

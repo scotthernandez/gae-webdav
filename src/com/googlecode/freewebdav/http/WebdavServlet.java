@@ -16,6 +16,7 @@ import com.bradmcevoy.http.Response;
 import com.bradmcevoy.http.ServletHttpManager;
 import com.bradmcevoy.http.ServletRequest;
 import com.bradmcevoy.http.ServletResponse;
+import com.bradmcevoy.http.http11.DefaultHttp11ResponseHandler.BUFFERING;
 import com.bradmcevoy.http.http11.auth.NonceProvider;
 import com.bradmcevoy.http.http11.auth.PreAuthenticationFilter;
 import com.bradmcevoy.http.http11.auth.SecurityManagerBasicAuthHandler;
@@ -49,7 +50,8 @@ public class WebdavServlet extends HttpServlet {
     	AuthenticationService authSvc = new AuthenticationService(authHandlers);
 
     	DefaultWebDavResponseHandler respHandler = new DefaultWebDavResponseHandler(authSvc);
-    	httpManager = new ServletHttpManager(fact, authSvc);
+    	respHandler.setBuffering(BUFFERING.always);
+    	httpManager = new ServletHttpManager(fact, respHandler, authSvc);
     	httpManager.addFilter(0, new PreAuthenticationFilter(respHandler, sm, np));
     }
 

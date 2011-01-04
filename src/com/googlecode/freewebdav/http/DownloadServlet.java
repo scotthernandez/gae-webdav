@@ -31,7 +31,7 @@ public class DownloadServlet extends HttpServlet {
 		if(wf == null)
 			resp.sendError(404);
 		
-		WebdavFile file = ofy.query(WebdavFile.class).ancestor(wf).filter("name", fileName).get();
+		WebdavFile file = ofy.query(WebdavFile.class).filter("parent", wf).filter("name", fileName).get();
 
 		if(file == null)
 			resp.sendError(404);

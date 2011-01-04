@@ -13,8 +13,11 @@ import com.googlecode.objectify.annotation.Indexed;
 import com.googlecode.objectify.annotation.Unindexed;
 
 @Entity(name="users") @Cached @Indexed @Data @ToString
-public class WebdavUser {
+public class WebdavUser implements WebdavItem {
 	@Id String userId;
 	String username, password;
 	@Unindexed Date created = new Date();
+
+	@Override public Date 	getLastModified() 	{ return null; }
+	@Override public String getName() 			{ return username; }
 }

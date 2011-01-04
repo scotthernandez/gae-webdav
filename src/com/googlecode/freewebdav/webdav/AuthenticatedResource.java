@@ -14,6 +14,7 @@ import com.bradmcevoy.http.Request.Method;
 import com.bradmcevoy.http.Resource;
 import com.bradmcevoy.http.http11.auth.DigestResponse;
 import com.google.inject.Injector;
+import com.googlecode.freewebdav.entities.WebdavItem;
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.Objectify;
 
@@ -25,19 +26,19 @@ public class AuthenticatedResource implements Resource, DigestResource, PropFind
 	@Inject protected Objectify ofy;
 	protected String name;
 	protected String id;
+	protected WebdavItem item;
 	protected Date dateModified = new Date();
 	protected Date dateCreated = new Date();
 	
 	protected AuthenticatedResource() {}
-	public AuthenticatedResource(String id, String name){
-		this.name = name;
-		this.id = id;
+	public AuthenticatedResource(WebdavItem item){
+		this.item = item;
+		this.name = item.getName();
+//		this.id = getStringifiedKeyForIdFromEntity(item);
+		this.dateCreated = item.getCreated();
+		this.dateModified = item.getLastModified();
 	}
 	
-	public AuthenticatedResource(String name){
-		this(null,name);
-	}
-
 	public<T> T inject(T res){
 		if (injector != null) injector.injectMembers(res);
 		return res;
@@ -46,7 +47,10 @@ public class AuthenticatedResource implements Resource, DigestResource, PropFind
 	protected <T> Key<T> getKey(T entity) {
 		return ofy.getFactory().getKey(entity);
 	} 
-	
+
+	protected String getStringifiedKeyForIdFromEntity(Object obj) {
+		return ofy.getFactory().keyToString(getKey(obj));
+	}
 	@Override
 	public Object authenticate(String user, String password) {
 		return null;
@@ -94,7 +98,8 @@ public class AuthenticatedResource implements Resource, DigestResource, PropFind
 
 	@Override
 	public String getUniqueId() {
-//		if(_id == null) throw new IllegalStateException("Id is null");
+		if(id == null)
+			id = getStringifiedKeyForIdFromEntity(item);
 		return (id != null) ? id.replace("?", "_") : null;
 	}
 

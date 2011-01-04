@@ -12,15 +12,12 @@ import com.googlecode.objectify.Key;
 import com.googlecode.objectify.annotation.Cached;
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Indexed;
-import com.googlecode.objectify.annotation.NotSaved;
-import com.googlecode.objectify.annotation.Parent;
-import com.googlecode.objectify.condition.IfNull;
 
 @Entity(name="folders") @Cached @Indexed  @Data @ToString
-public class WebdavFolder {
-	@Parent Key<WebdavFolder> parent; //only set when user is null
-	@NotSaved(IfNull.class) Key<WebdavUser> user; //only set when parent is null
+public class WebdavFolder implements WebdavItem {
 	@Id Long id;
+	@SuppressWarnings("rawtypes")
+	Key parent; //Key<User/Folder>
 	String name;
 	Date created = new Date();
 	Date lastModified;

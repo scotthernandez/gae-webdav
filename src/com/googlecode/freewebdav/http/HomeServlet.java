@@ -54,8 +54,9 @@ public class HomeServlet extends HttpServlet {
 				wu.setUserId(u.getUserId());
 				wu.setUsername(u.getNickname());
 				Key<WebdavUser> wuKey = ofy.put(wu);
+
 				WebdavFolder root = new WebdavFolder();
-				root.setUser(wuKey);
+				root.setParent(wuKey);
 				ofy.put(root);
 			}
 			
