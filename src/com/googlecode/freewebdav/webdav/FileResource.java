@@ -19,6 +19,7 @@ import com.bradmcevoy.http.exceptions.NotAuthorizedException;
 import com.bradmcevoy.http.webdav.PropPatchHandler.Fields;
 import com.bradmcevoy.io.StreamUtils;
 import com.googlecode.freewebdav.entities.WebdavFile;
+import com.googlecode.freewebdav.entities.WebdavFileData;
 
 public class FileResource extends AuthenticatedResource implements ReplaceableResource, PropPatchableResource, com.bradmcevoy.http.FileResource {
 	private static final Logger log = Logger.getLogger(FileResource.class.getName());
@@ -29,9 +30,14 @@ public class FileResource extends AuthenticatedResource implements ReplaceableRe
 	protected WebdavFile getFile() {
 		return (WebdavFile) item;
 	}
+
+	protected WebdavFileData getData() {
+		return ofy.get(getFile().getData());
+	}
+	
 	@Override
 	public Long getContentLength() {
-		return (long) getFile().getData().length;
+		return (long) getFile().getBytes();
 	}
 	@Override
 	public String getContentType(String accepts) {
@@ -44,7 +50,7 @@ public class FileResource extends AuthenticatedResource implements ReplaceableRe
 	
 	@Override
 	public void sendContent(OutputStream out, Range range, Map<String, String> params, String contentType) throws IOException, NotAuthorizedException, BadRequestException {
-		writeData(getFile().getData(), out, range);
+		writeData(getData().getData(), out, range);
 	}
 
 	private void writeData(byte[] data, OutputStream out, Range range) throws IOException {
@@ -56,7 +62,7 @@ public class FileResource extends AuthenticatedResource implements ReplaceableRe
 	
 	@Override
 	public void delete() throws NotAuthorizedException, ConflictException, BadRequestException {
-		ofy.delete(getKey(getFile()));
+		ofy.delete(getKey(getFile()), getFile().getData());
 	}
 	
 	@Override
@@ -67,8 +73,9 @@ public class FileResource extends AuthenticatedResource implements ReplaceableRe
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
-		getFile().setData(bos.toByteArray());
-		ofy.put(getFile());
+		WebdavFileData fd = getData();
+		fd.setData(bos.toByteArray());
+		ofy.put(fd);
 	}
 	
 	@Override

@@ -7,6 +7,7 @@ import javax.inject.Singleton;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.googlecode.freewebdav.entities.WebdavFile;
+import com.googlecode.freewebdav.entities.WebdavFileData;
 import com.googlecode.freewebdav.entities.WebdavFolder;
 import com.googlecode.freewebdav.entities.WebdavUser;
 import com.googlecode.freewebdav.http.DownloadServlet;
@@ -36,7 +37,7 @@ public class Module extends AbstractModule {
 		log.fine("Configuring ObjectifyFactory");
 		ObjectifyFactory fact = new ObjectifyFactory();
 		fact.register(WebdavUser.class);
-//		fact.register(WebdavRootFolder.class);
+		fact.register(WebdavFileData.class);
 		fact.register(WebdavFolder.class);
 		fact.register(WebdavFile.class);
 		return fact;

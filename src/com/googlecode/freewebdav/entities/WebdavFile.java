@@ -21,7 +21,8 @@ public class WebdavFile implements WebdavItem, Cloneable {
 	Date created = new Date();
 	Date lastModified;
 	String contentType;
-	byte[] data;
+	Key<WebdavFileData> data;
+	long bytes;
 
 	@Override
 	protected Object clone() throws CloneNotSupportedException {

@@ -45,7 +45,7 @@ public class DownloadServlet extends HttpServlet {
 			resp.setHeader("Content-Disposition", "attachment; filename=\"" + name + "\"");
 		
 		//TODO add cache headers.
-		resp.getOutputStream().write(file.getData());
+		resp.getOutputStream().write(ofy.get(file.getData()).getData());
 		resp.flushBuffer();
 	}
 }

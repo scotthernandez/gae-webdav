@@ -18,6 +18,7 @@ import com.bradmcevoy.http.exceptions.ConflictException;
 import com.bradmcevoy.http.exceptions.NotAuthorizedException;
 import com.bradmcevoy.io.StreamUtils;
 import com.googlecode.freewebdav.entities.WebdavFile;
+import com.googlecode.freewebdav.entities.WebdavFileData;
 import com.googlecode.freewebdav.entities.WebdavFolder;
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.Objectify;
@@ -73,10 +74,14 @@ public class FolderResource extends NamedCollectionResource<WebdavFolder> implem
 	public static Resource createFile(Objectify ofy, Key<WebdavFolder> parent, String s, InputStream is, Long length, String contentType) throws IOException, ConflictException {
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		StreamUtils.readTo(is, bos);
+
+		byte[] data = bos.toByteArray();
+
 		WebdavFile wf = new WebdavFile();
 		wf.setContentType(contentType);
+		wf.setBytes(data.length);
 		wf.setName(s);
-		wf.setData(bos.toByteArray());
+		wf.setData(ofy.put(new WebdavFileData(data)));
 		wf.setParent(parent);
 		ofy.put(wf);
 		
