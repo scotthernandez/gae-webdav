@@ -1,6 +1,6 @@
 <web-app xmlns:c="http://java.sun.com/jsp/jstl/core">
 	<welcome-file-list>
-		<welcome-file>Index.jsp</welcome-file>
+		<welcome-file>home</welcome-file>
 	</welcome-file-list>
 
 	<filter>
@@ -18,31 +18,31 @@
 	</listener>
 	
 	<!-- AppStats stuff -->
-	<filter>
-        <filter-name>appstats</filter-name>
-        <filter-class>com.google.appengine.tools.appstats.AppstatsFilter</filter-class>
-        <init-param>
-            <param-name>logMessage</param-name>
-            <param-value>Appstats available: /appstats/details?time={ID}</param-value>
-        </init-param>
-    </filter>
-    <filter-mapping>
-        <filter-name>appstats</filter-name>
-        <url-pattern>/*</url-pattern>
-    </filter-mapping>
-    <servlet>
-        <servlet-name>appstats</servlet-name>
-        <servlet-class>com.google.appengine.tools.appstats.AppstatsServlet</servlet-class>
-    </servlet>
-    
-    <servlet-mapping>
-        <servlet-name>appstats</servlet-name>
-        <url-pattern>/appstats/*</url-pattern>
-    </servlet-mapping>
+<!--	<filter>-->
+<!--        <filter-name>appstats</filter-name>-->
+<!--        <filter-class>com.google.appengine.tools.appstats.AppstatsFilter</filter-class>-->
+<!--        <init-param>-->
+<!--            <param-name>logMessage</param-name>-->
+<!--            <param-value>Appstats available: /stats/details?time={ID}</param-value>-->
+<!--        </init-param>-->
+<!--    </filter>-->
+<!--    <filter-mapping>-->
+<!--        <filter-name>appstats</filter-name>-->
+<!--        <url-pattern>/*</url-pattern>-->
+<!--    </filter-mapping>-->
+<!--    <servlet>-->
+<!--        <servlet-name>stats</servlet-name>-->
+<!--        <servlet-class>com.google.appengine.tools.appstats.AppstatsServlet</servlet-class>-->
+<!--    </servlet>-->
+<!--    -->
+<!--    <servlet-mapping>-->
+<!--        <servlet-name>stats</servlet-name>-->
+<!--        <url-pattern>/stats/*</url-pattern>-->
+<!--    </servlet-mapping>-->
 
     <security-constraint>
         <web-resource-collection>
-            <url-pattern>/appstats/*</url-pattern>
+            <url-pattern>/stats/*</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <role-name>admin</role-name>

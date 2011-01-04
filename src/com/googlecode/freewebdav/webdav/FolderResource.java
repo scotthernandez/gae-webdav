@@ -76,14 +76,17 @@ public class FolderResource extends NamedCollectionResource<WebdavFolder> implem
 		StreamUtils.readTo(is, bos);
 
 		byte[] data = bos.toByteArray();
-
+		Key<WebdavFileData> dataKey = ofy.put(new WebdavFileData(data));
+		
 		WebdavFile wf = new WebdavFile();
 		wf.setContentType(contentType);
 		wf.setBytes(data.length);
 		wf.setName(s);
-		wf.setData(ofy.put(new WebdavFileData(data)));
+		wf.setData(dataKey);
 		wf.setParent(parent);
 		ofy.put(wf);
+		
+		log.info("Saved WebdavFile: " + wf.toString());
 		
 		return new FileResource(wf);
 	}

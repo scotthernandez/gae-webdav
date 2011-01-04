@@ -4,6 +4,8 @@ import java.util.logging.Logger;
 
 import javax.inject.Singleton;
 
+import com.google.appengine.tools.appstats.AppstatsFilter;
+import com.google.appengine.tools.appstats.AppstatsServlet;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.googlecode.freewebdav.entities.WebdavFile;
@@ -26,6 +28,8 @@ public class Module extends AbstractModule {
 		log.fine("Setting up bindings for guice...");
 		bind(ResourceFactory.class);
 		bind(com.bradmcevoy.http.ResourceFactory.class).to(ResourceFactory.class);
+		bind(AppstatsFilter.class).asEagerSingleton();
+		bind(AppstatsServlet.class).asEagerSingleton();
 		bind(DownloadServlet.class).asEagerSingleton();
 		bind(HomeServlet.class).asEagerSingleton();
 		bind(LoginServlet.class).asEagerSingleton();

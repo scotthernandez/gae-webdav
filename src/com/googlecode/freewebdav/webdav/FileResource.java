@@ -37,7 +37,7 @@ public class FileResource extends AuthenticatedResource implements ReplaceableRe
 	
 	@Override
 	public Long getContentLength() {
-		return (long) getFile().getBytes();
+		return getFile().getBytes();
 	}
 	@Override
 	public String getContentType(String accepts) {
