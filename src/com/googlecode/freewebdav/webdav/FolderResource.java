@@ -9,9 +9,7 @@ import java.util.logging.Logger;
 
 import com.bradmcevoy.http.Auth;
 import com.bradmcevoy.http.CollectionResource;
-import com.bradmcevoy.http.DeletableCollectionResource;
 import com.bradmcevoy.http.Range;
-import com.bradmcevoy.http.Request;
 import com.bradmcevoy.http.Resource;
 import com.bradmcevoy.http.exceptions.BadRequestException;
 import com.bradmcevoy.http.exceptions.ConflictException;
@@ -24,7 +22,7 @@ import com.googlecode.objectify.Key;
 import com.googlecode.objectify.Objectify;
 
 @SuppressWarnings("unchecked")
-public class FolderResource extends NamedCollectionResource<WebdavFolder> implements com.bradmcevoy.http.FolderResource, DeletableCollectionResource {
+public class FolderResource extends NamedCollectionResource<WebdavFolder> implements com.bradmcevoy.http.FolderResource {
 	private static final Logger log = Logger.getLogger(FolderResource.class.getName());
 	public static Long MAX_AGE = 60L * 60L; // 1hr
 	public FolderResource(WebdavFolder wf) { super(wf); }
@@ -48,10 +46,10 @@ public class FolderResource extends NamedCollectionResource<WebdavFolder> implem
 		ofy.delete(getKey(getFolder()));
 	}
 
-	@Override
-	public boolean isLockedOutRecursive(Request arg0) {
-		return true;
-	}
+//	@Override
+//	public boolean isLockedOutRecursive(Request arg0) {
+//		return false;
+//	}
 
 	@Override
 	public CollectionResource createCollection(String name) throws NotAuthorizedException, ConflictException, BadRequestException {
