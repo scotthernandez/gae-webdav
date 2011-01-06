@@ -22,7 +22,7 @@ public class ServletModule extends com.google.inject.servlet.ServletModule {
 		
 		serve("/get/*").with(DownloadServlet.class);
 		serve("/login").with(LoginServlet.class);
-		serve("/home").with(HomeServlet.class);
+		serve("/home", "/").with(HomeServlet.class);
 		serve("/webdav/*").with(WebdavServlet.class);
 		serve("/webdav*").with(WebdavServlet.class);
 	}

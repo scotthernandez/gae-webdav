@@ -79,7 +79,7 @@ public class FolderResource extends NamedCollectionResource<WebdavFolder> implem
 		Key<WebdavFileData> dataKey = ofy.put(new WebdavFileData(data));
 		
 		WebdavFile wf = new WebdavFile();
-		wf.setContentType(contentType);
+		wf.setContentType(fixCT(contentType));
 		wf.setBytes(data.length);
 		wf.setName(s);
 		wf.setData(dataKey);
@@ -91,6 +91,12 @@ public class FolderResource extends NamedCollectionResource<WebdavFolder> implem
 		return new FileResource(wf);
 	}
 
+	/** fixes up the content-type */
+	static String fixCT(String ct) {
+		if(ct.indexOf(",") > 0)
+			return ct.substring(0, ct.indexOf(","));
+		return ct;
+	}
 	@Override
 	public void moveTo(CollectionResource rDest, String name) throws ConflictException, NotAuthorizedException, BadRequestException {
 		if (rDest instanceof FolderResource) {

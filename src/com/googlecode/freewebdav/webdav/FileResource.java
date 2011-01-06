@@ -10,20 +10,28 @@ import java.util.logging.Logger;
 import com.bradmcevoy.http.Auth;
 import com.bradmcevoy.http.CollectionResource;
 import com.bradmcevoy.http.FileItem;
+import com.bradmcevoy.http.LockInfo;
+import com.bradmcevoy.http.LockResult;
+import com.bradmcevoy.http.LockTimeout;
+import com.bradmcevoy.http.LockToken;
+import com.bradmcevoy.http.LockableResource;
 import com.bradmcevoy.http.PropPatchableResource;
 import com.bradmcevoy.http.Range;
 import com.bradmcevoy.http.ReplaceableResource;
 import com.bradmcevoy.http.exceptions.BadRequestException;
 import com.bradmcevoy.http.exceptions.ConflictException;
+import com.bradmcevoy.http.exceptions.LockedException;
 import com.bradmcevoy.http.exceptions.NotAuthorizedException;
+import com.bradmcevoy.http.exceptions.PreConditionFailedException;
 import com.bradmcevoy.http.webdav.PropPatchHandler.Fields;
 import com.bradmcevoy.io.StreamUtils;
 import com.googlecode.freewebdav.entities.WebdavFile;
 import com.googlecode.freewebdav.entities.WebdavFileData;
 
-public class FileResource extends AuthenticatedResource implements ReplaceableResource, PropPatchableResource, com.bradmcevoy.http.FileResource {
+public class FileResource extends AuthenticatedResource implements LockableResource, ReplaceableResource, PropPatchableResource, com.bradmcevoy.http.FileResource {
 	private static final Logger log = Logger.getLogger(FileResource.class.getName());
 	public static Long MAX_AGE = 60L * 60L; // 1hr
+	MemcacheLockManager lockMan = new MemcacheLockManager();
 	
 	protected FileResource(WebdavFile wf) { super(wf); }
 
@@ -41,7 +49,7 @@ public class FileResource extends AuthenticatedResource implements ReplaceableRe
 	}
 	@Override
 	public String getContentType(String accepts) {
-		return getFile().getContentType();
+		return FolderResource.fixCT(getFile().getContentType());
 	}
 	@Override
 	public Long getMaxAgeSeconds(Auth auth) {
@@ -73,9 +81,10 @@ public class FileResource extends AuthenticatedResource implements ReplaceableRe
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
-		WebdavFileData fd = getData();
-		fd.setData(bos.toByteArray());
-		ofy.put(fd);
+		byte[] data  = bos.toByteArray();
+		getData().setData(data);
+		getFile().setBytes(data.length);
+		ofy.put(getData(), getFile());
 	}
 	
 	@Override
@@ -113,5 +122,25 @@ public class FileResource extends AuthenticatedResource implements ReplaceableRe
 	@Override
 	public String processForm(Map<String, String> parameters, Map<String, FileItem> files) throws BadRequestException, NotAuthorizedException, ConflictException {
 		throw new BadRequestException(this, "not implemented yet");
+	}
+
+	@Override
+	public LockResult lock(LockTimeout timeout, LockInfo lockInfo) throws NotAuthorizedException, PreConditionFailedException, LockedException {
+		return lockMan.lock(timeout, lockInfo, this);
+	}
+
+	@Override
+	public LockResult refreshLock(String token) throws NotAuthorizedException, PreConditionFailedException {
+		return lockMan.refresh(token, this);
+	}
+
+	@Override
+	public void unlock(String tokenId) throws NotAuthorizedException, PreConditionFailedException {
+		lockMan.unlock(tokenId, this);
+	}
+
+	@Override
+	public LockToken getCurrentLock() {
+		return lockMan.getCurrentToken(this);
 	}
 }
