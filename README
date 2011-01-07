@@ -20,6 +20,14 @@ BUILDING
 DEPLOYING
 
   Change the appid, and then deploy to appengine.
+
+TODO
+  - cleanup web ui, really add some.
+  - add webui for admins
+  - support acls (or at least public/private bits for folders = .public file in a dir)
+  - remove pre-auth for acl support
+  - allow public webdav browsing if permissions allow (see acl features above)
+  - store files in blob-store programatically (10MB+)
   
 LICENSE
 
